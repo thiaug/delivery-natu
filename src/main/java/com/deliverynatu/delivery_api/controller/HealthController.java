@@ -1,7 +1,7 @@
 package com.deliverynatu.delivery_api.controller;
+
 import java.time.LocalDateTime;
 import java.util.Map;
-import org.springframework.cglib.core.Local;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -9,29 +9,29 @@ import org.springframework.web.bind.annotation.RestController;
 public class HealthController {
 
     @GetMapping("/health")
-    public Map<String, String> health(){
+    public Map<String, String> health() {
         return Map.of(
-            "status", "UP",
-            "timestamp", LocalDateTime.now().toString(),
-            "service", "Delivery API",
-            "javaVersion", System.getProperty("java.version")
-        );
+                "status", "UP",
+                "timestamp", LocalDateTime.now().toString(),
+                "service", "Delivery API",
+                "javaVersion", System.getProperty("java.version"));
     }
+
     @GetMapping("/info")
-    public AppInfo info(){
+    public AppInfo info() {
         return new AppInfo(
-            "Delivery API",
-            "1.0.0",
-            "Thiago A.",
-            "JDK 21",
-            "Spring Boot 3.2.x"        
-            );
+                "Delivery API",
+                "1.0.0",
+                "Thiago A.",
+                "JDK 21",
+                "Spring Boot 3.2.x");
     }
+
     public record AppInfo(
-        String application,
-        String version,
-        String developer,
-        String javaVersion,
-        String framework
-        ){}
+            String application,
+            String version,
+            String developer,
+            String javaVersion,
+            String framework) {
     }
+}
