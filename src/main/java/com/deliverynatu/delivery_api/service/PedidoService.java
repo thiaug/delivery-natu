@@ -1,6 +1,5 @@
 package com.deliverynatu.delivery_api.service;
 
-import java.io.ObjectInputFilter.Status;
 import java.util.List;
 import java.util.Optional;
 
@@ -136,6 +135,27 @@ public class PedidoService {
             pedido.setObservacoes(pedido.getObservacoes() + " Motivo do cancelamento: " + motivoCancelamento);
         }
 
+        return pedidoRepository.save(pedido);
+    }
+
+    // Atualizar status do pedido
+    public Pedido atualizarStatus(Long pedidoId, StatusPedido status) {
+        Pedido pedido = buscarPorId(pedidoId)
+                .orElseThrow(() -> new IllegalArgumentException("Pedido não encontrado com ID: " + pedidoId));
+
+        // Verificações de regras de negócio (opcional)
+        if (pedido.getStatus() == StatusPedido.CANCELADO) {
+            throw new IllegalArgumentException("Não é possível atualizar o status de um pedido cancelado.");
+        }
+
+        if (pedido.getStatus() == StatusPedido.ENTREGUE) {
+            throw new IllegalArgumentException("O pedido já foi entregue e não pode ser alterado.");
+        }
+
+        // Atualiza o status
+        pedido.setStatus(status);
+
+        // Salva no banco
         return pedidoRepository.save(pedido);
     }
 

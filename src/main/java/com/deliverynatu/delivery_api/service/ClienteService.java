@@ -18,7 +18,7 @@ public class ClienteService {
     private ClienteRepository clienteRepository;
 
     // Cadastrar um cliente
-    public Cliente cadastrar(Cliente cliente) {
+    public Cliente cadastrarCliente(Cliente cliente) {
         if (clienteRepository.existsByEmail(cliente.getEmail())) {
             throw new IllegalArgumentException("Email já cadastrado" + cliente.getEmail());
         }
