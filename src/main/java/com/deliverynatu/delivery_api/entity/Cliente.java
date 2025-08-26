@@ -5,7 +5,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -21,6 +24,14 @@ public class Cliente {
     private String endereco;
     private boolean ativo;
 
+    private LocalDateTime dataCadastro;
+
     @OneToMany(mappedBy = "cliente")
     private List<Pedido> pedidos;
+
+    @PrePersist
+    public void prePersist() {
+        this.dataCadastro = LocalDateTime.now();
+    }
+
 }

@@ -26,17 +26,17 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long> 
     List<Restaurante> findByNomeContainingIgnoreCaseAndAtivoTrue(String nome);
 
     // Buscar restaurante por avaliação minima
-    List<Restaurante> findByAvaliacaoGreaterThanEqualAndAtivo(BigDecimal avaliacao);
+    List<Restaurante> findByAvaliacaoGreaterThanEqualAndAtivo(BigDecimal avaliacao, boolean ativo);
 
     // Ordenar restaurantes por avaliação
     List<Restaurante> findByAtivoTrueOrderByAvaliacaoDesc();
 
     // Query customizada - restaurantes com produtos
-    @Query("SELECT DISTINCT r FROM Restaurante r JOIN r.produtos p WHERE r.ativo = true AND p.ativo = true ")
+    @Query("SELECT DISTINCT r FROM Restaurante r JOIN r.produtos p WHERE r.ativo = true AND p.disponivel = true")
     List<Restaurante> findRestaurantesComProdutos();
 
     // Buscar por faixa de tava de entrega
-    @Query("SELECT r FROM Restaurante r WHRE r.taxaEntrega BETWEEN :min AND :max AND r.ativo = true")
+    @Query("SELECT r FROM Restaurante r WHERE r.taxaEntrega BETWEEN :min AND :max AND r.ativo = true")
     List<Restaurante> findByTaxaEntregaBetween(@Param("min") BigDecimal min, @Param("max") BigDecimal max);
 
     // Categorias disponíveis

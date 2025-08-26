@@ -108,7 +108,7 @@ public class PedidoService {
     // Listar pedidos por cliente
     @Transactional(readOnly = true)
     public List<Pedido> listarPorCliente(Long clienteId) {
-        return pedidoRepository.findByClienteIdORderByDataPedidoDesc(clienteId);
+        return pedidoRepository.findByClienteIdOrderByDataPedidoDesc(clienteId);
     }
 
     // Buscar por numero do pedido

@@ -19,7 +19,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     List<Pedido> findByClienteOrderByDataPedidoDesc(Cliente cliente);
 
     // Busca pedidos por clienteId e ordena por data do pedido em ordem decrescente
-    List<Pedido> findByClienteIdORderByDataPedidoDesc(long clienteId);
+    List<Pedido> findByClienteIdOrderByDataPedidoDesc(long clienteId);
 
     // Busca pedidos por status e ordena por data do pedido em ordem decrescente
     List<Pedido> findByStatusOrderByDataPedidoDesc(Status status);
@@ -31,8 +31,9 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     List<Pedido> findByDataPedidoBetweenOrderByDataPedidoDesc(LocalDateTime inicio, LocalDateTime fim);
 
     // Busca pedidos do dia
-    @Query("SELECT p FROM Pedido p WHERE DATE(p.dataPedido) = CURRENT_DATE ORDER BY p.dataPedido DESC")
-    List<Pedido> findPedidosDoDia();
+    // @Query("SELECT p FROM Pedido p WHERE DATE(p.dataPedido) = CURRENT_DATE ORDER
+    // BY p.dataPedido DESC")
+    // List<Pedido> findPedidosDoDia();
 
     // Busca pedidos por restauranteId e ordena por data do pedido em ordem
     // decrescente
@@ -44,7 +45,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     List<Object[]> countPedidosByStatus();
 
     // Busca pedidos pendentes (dashboard)
-    @Query("SELECT p FROM Pedido p WHERE p.status IN ('PENDENTE','CONFIRMADO','PREPARANDO') + ORDER BY p.dataPedido ASC")
+    @Query("SELECT p FROM Pedido p WHERE p.status IN ('PENDENTE','CONFIRMADO','PREPARANDO') ORDER BY p.dataPedido ASC")
     List<Pedido> findPedidosPendentes();
 
     // Valor total de vendas por periodo

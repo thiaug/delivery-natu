@@ -38,12 +38,16 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     List<Produto> findByDisponivelTrueOrderByPrecoDesc();
 
     // Produtos mais vendidos
-    @Query("SELECT ´p FROM Produto p JOIN p.itensPedido ip" + "GROUP BY p ORDER BY COUNT(ip) DESC")
+    @Query("SELECT ip.produto FROM ItemPedido ip GROUP BY ip.produto ORDER BY COUNT(ip) DESC")
     List<Produto> findProdutosMaisVendidos();
 
     // Buscar produtos por restaurante e categoria
-    List<Produto> findByRestauranteAndCategoria(@Param("restauranteId") Long restauranteId,
+    List<Produto> findByRestauranteAndCategoria(@Param("restauranteId") Restaurante restaurante,
             @Param("categoria") String categoria);
+
+    // List<Produto> findByRestauranteAndCategoria(@Param("restauranteId") Long
+    // restauranteId,
+    // @Param("categoria") String categoria);
 
     // Contar produtos disponiveis por restaurante
     @Query("SELECT COUNT(p) FROM Produto p WHERE p.restaurante.id = :restauranteId AND p.disponivel = true")
