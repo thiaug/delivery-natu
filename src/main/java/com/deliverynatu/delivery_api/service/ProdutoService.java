@@ -17,28 +17,35 @@ import com.deliverynatu.delivery_api.repository.RestauranteRepository;
 @Transactional
 public class ProdutoService {
 
-    // Injeção de dependência do repositório de produtos
     @Autowired
     private ProdutoRepository produtoRepository;
 
-    // Injeção de dependência do repositório de restaurantes
     @Autowired
     private RestauranteRepository restauranteRepository;
 
-    // Método para cadastrar um novo produto
+    // Cadastrar novo produto vinculado a um restaurante
     public Produto cadastrar(Produto produto, Long restauranteId) {
         Restaurante restaurante = restauranteRepository.findById(restauranteId)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurante não encontrado com ID: " + restauranteId));
 
         validarDadosProduto(produto);
 
+        // associa o produto ao restaurante
+        produto.setRestaurante(restaurante);
+
         return produtoRepository.save(produto);
     }
 
-    // Buscar por ID
+    // Buscar produto por ID
     @Transactional(readOnly = true)
     public Optional<Produto> buscarPorId(Long id) {
         return produtoRepository.findById(id);
+    }
+
+    // Listar todos os produtos disponíveis
+    @Transactional(readOnly = true)
+    public List<Produto> listarTodosDisponiveis() {
+        return produtoRepository.findByDisponivelTrue();
     }
 
     // Listar produtos por restaurante
@@ -47,13 +54,19 @@ public class ProdutoService {
         return produtoRepository.findByRestauranteIdAndDisponivelTrue(restauranteId);
     }
 
-    // Buscar por categoria
+    // Buscar produtos por categoria
     @Transactional(readOnly = true)
     public List<Produto> buscarPorCategoria(String categoria) {
         return produtoRepository.findByCategoriaAndDisponivelTrue(categoria);
     }
 
-    // Atualizar produto
+    // Buscar produtos por faixa de preço
+    @Transactional(readOnly = true)
+    public List<Produto> buscarPorFaixaDePreco(BigDecimal precoMin, BigDecimal precoMax) {
+        return produtoRepository.findByPrecoBetweenAndDisponivelTrue(precoMin, precoMax);
+    }
+
+    // Atualizar produto existente
     public Produto atualizar(Long id, Produto produtoAtualizado) {
         Produto produto = buscarPorId(id)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado com ID: " + id));
@@ -66,32 +79,24 @@ public class ProdutoService {
         produto.setCategoria(produtoAtualizado.getCategoria());
 
         return produtoRepository.save(produto);
-
     }
 
-    // Alterar Disponibilidade
+    // Alterar disponibilidade do produto
     public void alterarDisponibilidade(Long id, boolean disponivel) {
         Produto produto = buscarPorId(id)
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado com ID: " + id));
+
         produto.setDisponivel(disponivel);
         produtoRepository.save(produto);
     }
 
-    // Buscar por faixa de preço
-    @Transactional(readOnly = true)
-    public List<Produto> buscarPorFaixaDePreco(BigDecimal precoMin, BigDecimal precoMax) {
-        return produtoRepository.findByPrecoBetweenAndDisponivelTrue(precoMin, precoMax);
-    }
-
-    // Validações do produto
+    // Validações de negócio
     private void validarDadosProduto(Produto produto) {
-        // Implementar validações de negócio para o produto
-        if (produto.getNome() == null || produto.getNome().isEmpty()) {
-            throw new IllegalArgumentException("O nome do produto não pode ser vazio.");
+        if (produto.getNome() == null || produto.getNome().trim().isEmpty()) {
+            throw new IllegalArgumentException("O nome do produto é obrigatório.");
         }
         if (produto.getPreco() == null || produto.getPreco().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("O preço do produto deve ser maior que zero.");
         }
     }
-
 }

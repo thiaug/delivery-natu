@@ -13,6 +13,9 @@ import com.deliverynatu.delivery_api.entity.Restaurante;
 
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
+    // Buscar todos os produtos disponíveis (independente do restaurante)
+    List<Produto> findByDisponivelTrue();
+
     // Buscar produtos disponiveis de um restaurante
     List<Produto> findByRestauranteAndDisponivelTrue(Restaurante restaurante);
 
