@@ -13,47 +13,56 @@ import com.deliverynatu.delivery_api.entity.Restaurante;
 
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
-    // Buscar todos os produtos disponíveis (independente do restaurante)
-    List<Produto> findByDisponivelTrue();
+        // Buscar todos os produtos de um restaurante
+        List<Produto> findByRestauranteId(Long restauranteId);
 
-    // Buscar produtos disponiveis de um restaurante
-    List<Produto> findByRestauranteAndDisponivelTrue(Restaurante restaurante);
+        // Buscar todos os produtos disponíveis (independente do restaurante)
+        List<Produto> findByDisponivelTrue();
 
-    // Buscar produtos disponiveis por restauranteId
-    List<Produto> findByRestauranteIdAndDisponivelTrue(Long restauranteId);
+        // Buscar produtos por categoria
+        List<Produto> findByCategoria(String categoria);
 
-    // Buscar produtos disponiveis por categoria
-    List<Produto> findByCategoriaAndDisponivelTrue(String categoria);
+        // Buscar produtos disponiveis de um restaurante
+        List<Produto> findByRestauranteAndDisponivelTrue(Restaurante restaurante);
 
-    // Buscar por nome contendo
-    List<Produto> findByNomeContainingIgnoreCaseAndDisponivelTrue(String nome);
+        // Buscar produtos disponiveis por restauranteId
+        List<Produto> findByRestauranteIdAndDisponivelTrue(Long restauranteId);
 
-    // Buscar por faixa de preço
-    List<Produto> findByPrecoBetweenAndDisponivelTrue(BigDecimal precoMin, BigDecimal precoMax);
+        // Buscar produtos disponiveis por categoria
+        List<Produto> findByCategoriaAndDisponivelTrue(String categoria);
 
-    // Buscar produtos mais baratos que um determinado preço
-    List<Produto> findByPrecoLessThanEqualAndDisponivelTrue(BigDecimal preco);
+        // Buscar por nome contendo
+        List<Produto> findByNomeContainingIgnoreCaseAndDisponivelTrue(String nome);
 
-    // Ordenar produtos por preço ascendente
-    List<Produto> findByDisponivelTrueOrderByPrecoAsc();
+        // Buscar por faixa de preço
+        List<Produto> findByPrecoBetweenAndDisponivelTrue(BigDecimal precoMin, BigDecimal precoMax);
 
-    // Ordenar produtos por preço descendente
-    List<Produto> findByDisponivelTrueOrderByPrecoDesc();
+        // Buscar produtos mais baratos que um determinado preço
+        List<Produto> findByPrecoLessThanEqualAndDisponivelTrue(BigDecimal preco);
 
-    // Produtos mais vendidos
-    @Query("SELECT ip.produto FROM ItemPedido ip GROUP BY ip.produto ORDER BY COUNT(ip) DESC")
-    List<Produto> findProdutosMaisVendidos();
+        // Ordenar produtos por preço ascendente
+        List<Produto> findByDisponivelTrueOrderByPrecoAsc();
 
-    // Buscar produtos por restaurante e categoria
-    List<Produto> findByRestauranteAndCategoria(@Param("restauranteId") Restaurante restaurante,
-            @Param("categoria") String categoria);
+        // Ordenar produtos por preço descendente
+        List<Produto> findByDisponivelTrueOrderByPrecoDesc();
 
-    // List<Produto> findByRestauranteAndCategoria(@Param("restauranteId") Long
-    // restauranteId,
-    // @Param("categoria") String categoria);
+        @Query(value = "SELECT p.nome, COUNT(ip.produto_id) as quanƟdade_vendida " +
+                        "FROM produto p " +
+                        "LEFT JOIN item_pedido ip ON p.id = ip.produto_id " +
+                        "GROUP BY p.id, p.nome " +
+                        "ORDER BY quanƟdade_vendida DESC " +
+                        "LIMIT 5", nativeQuery = true)
+        List<Object[]> produtosMaisVendidos();
 
-    // Contar produtos disponiveis por restaurante
-    @Query("SELECT COUNT(p) FROM Produto p WHERE p.restaurante.id = :restauranteId AND p.disponivel = true")
-    Long countByRestauranteId();
+        // Produtos mais vendidos
+        @Query("SELECT ip.produto FROM ItemPedido ip GROUP BY ip.produto ORDER BY COUNT(ip) DESC")
+        List<Produto> findProdutosMaisVendidos();
+
+        // Buscar produtos por restaurante e categoria
+        List<Produto> findByRestauranteIdAndCategoria(Long restauranteId, String categoria);
+
+        // Contar produtos disponiveis por restaurante
+        @Query("SELECT COUNT(p) FROM Produto p WHERE p.restaurante.id = :restauranteId AND p.disponivel = true")
+        Long countByRestauranteId(@Param("restauranteId") Long restauranteId);
 
 }

@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
-    // Buscar cliente por email (método derivado)
+    // Buscar cliente por email
     Optional<Cliente> findByEmail(String email);
 
     // Verificar se email já existe
@@ -22,11 +22,19 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     // Buscar clientes ativos
     List<Cliente> findByAtivoTrue();
 
-    // Buscar clientes por nome (método derivado)
+    // Buscar clientes por nome
     List<Cliente> findByNomeContainingIgnoreCase(String nome);
 
     // Buscar cliente por telefone
     Optional<Cliente> findByTelefone(String telefone);
+
+    @Query(value = "SELECT c.nome, COUNT(p.id) as total_pedidos " +
+            "FROM cliente c " +
+            "LEFT JOIN pedido p ON c.id = p.cliente_id " +
+            "GROUP BY c.id, c.nome " +
+            "ORDER BY total_pedidos DESC " +
+            "LIMIT 10", nativeQuery = true)
+    List<Object[]> rankingClientesPorPedidos();
 
     // Query naƟva - clientes por cidade
     @Query(value = "SELECT * FROM clientes WHERE endereco LIKE %:cidade% AND ativo = true", nativeQuery = true)

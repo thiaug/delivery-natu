@@ -31,6 +31,7 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
+    // Buscar por Id
     @Transactional(readOnly = true)
     public Optional<Cliente> buscarPorId(Long id) {
         return clienteRepository.findById(id);
