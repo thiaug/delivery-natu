@@ -2,6 +2,7 @@ package com.deliverynatu.delivery_api.repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,9 @@ import com.deliverynatu.delivery_api.entity.Restaurante;
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
         // Buscar todos os produtos de um restaurante
         List<Produto> findByRestauranteId(Long restauranteId);
+
+        // Buscar produto por nome
+        Optional<Produto> findByNome(String nome);
 
         // Buscar todos os produtos disponíveis (independente do restaurante)
         List<Produto> findByDisponivelTrue();
@@ -32,7 +36,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
         List<Produto> findByCategoriaAndDisponivelTrue(String categoria);
 
         // Buscar por nome contendo
-        List<Produto> findByNomeContainingIgnoreCaseAndDisponivelTrue(String nome);
+        Optional<Produto> findByNomeContainingIgnoreCaseAndDisponivelTrue(String nome);
 
         // Buscar por faixa de preço
         List<Produto> findByPrecoBetweenAndDisponivelTrue(BigDecimal precoMin, BigDecimal precoMax);
@@ -45,6 +49,9 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
         // Ordenar produtos por preço descendente
         List<Produto> findByDisponivelTrueOrderByPrecoDesc();
+
+        // Buscar Restaurante e Categoria
+        List<Produto> findByRestauranteAndCategoria(Restaurante restaurante, String string);
 
         @Query(value = "SELECT p.nome, COUNT(ip.produto_id) as quanƟdade_vendida " +
                         "FROM produto p " +

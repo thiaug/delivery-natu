@@ -1,5 +1,6 @@
 package com.deliverynatu.delivery_api.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,7 +77,9 @@ public class PedidoService {
         item.setPedido(pedido);
         item.setQuantidade(quantidade);
         item.setPrecoUnitario(produto.getPreco());
-        item.getSubtotal();
+
+        // ********* CORREÇÃO AQUI: CALCULAR E DEFINIR O SUBTOTAL *********
+        item.setSubtotal(produto.getPreco().multiply(BigDecimal.valueOf(quantidade)));
 
         pedido.adicionarItem(item);
         return pedidoRepository.save(pedido);

@@ -36,7 +36,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
             "LIMIT 10", nativeQuery = true)
     List<Object[]> rankingClientesPorPedidos();
 
-    // Query naƟva - clientes por cidade
+    // Query nativa - clientes por cidade
     @Query(value = "SELECT * FROM clientes WHERE endereco LIKE %:cidade% AND ativo = true", nativeQuery = true)
     List<Cliente> findByCidade(@Param("cidade") String cidade);
 

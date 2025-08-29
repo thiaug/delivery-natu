@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
         // Busca pedidos por cliente
-        List<Pedido> findByClienteId(Cliente clienteId);
+        List<Pedido> findByClienteId(Long clienteId);
 
         // Buscar pedido pelo status
         List<Pedido> findByStatus(StatusPedido status);
@@ -43,7 +43,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
         // Busca pedidos por periodo
         List<Pedido> findByDataPedidoBetweenOrderByDataPedidoDesc(LocalDateTime inicio, LocalDateTime fim);
 
-        // Adicionar ao PedidoRepositoy
+        // Calcular total de vendas por restaurante
         @Query("SELECT p.restaurante.nome, SUM(p.valorTotal) " +
                         "FROM Pedido p " +
                         "GROUP BY p.restaurante.id, p.restaurante.nome " +

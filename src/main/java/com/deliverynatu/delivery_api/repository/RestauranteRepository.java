@@ -35,7 +35,7 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long> 
     List<Restaurante> findTop5ByOrderByNomeAsc();
 
     // Buscar restaurante por nome contendo (case insensitive)
-    List<Restaurante> findByNomeContainingIgnoreCaseAndAtivoTrue(String nome);
+    Optional<Restaurante> findByNomeContainingIgnoreCaseAndAtivoTrue(String nome);
 
     // Buscar restaurante por avaliação minima
     List<Restaurante> findByAvaliacaoGreaterThanEqualAndAtivo(BigDecimal avaliacao, boolean ativo);

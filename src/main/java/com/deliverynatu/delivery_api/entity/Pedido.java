@@ -32,9 +32,6 @@ public class Pedido {
     private String observacoes;
     private String numeroPedido;
 
-    @Enumerated(EnumType.STRING)
-    private StatusPedido status;
-
     public void confirmar() {
         this.setStatus(StatusPedido.CONFIRMADO);
     }
@@ -45,6 +42,9 @@ public class Pedido {
         }
         this.getItens().add(item);
     }
+
+    @Enumerated(EnumType.STRING)
+    private StatusPedido status;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
