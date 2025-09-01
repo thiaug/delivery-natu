@@ -1,111 +1,93 @@
 package com.deliverynatu.delivery_api.controller;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.deliverynatu.delivery_api.dto.request.ClienteRequest;
+import com.deliverynatu.delivery_api.dto.response.ClienteResponse;
+import com.deliverynatu.delivery_api.entity.Cliente;
+import com.deliverynatu.delivery_api.service.ClienteService;
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.deliverynatu.delivery_api.entity.Cliente;
-import com.deliverynatu.delivery_api.service.ClienteService;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("/api/clientes")
 @CrossOrigin(origins = "*")
 public class ClienteController {
 
     @Autowired
     private ClienteService clienteService;
 
-    // Cadastro de cliente
+    @Autowired
+    private ModelMapper modelMapper;
+
     @PostMapping
-    public ResponseEntity<?> cadastrarCliente(@Valid @RequestBody Cliente cliente) {
-        try {
-            Cliente clienteSalvo = clienteService.cadastrarCliente(cliente);
-            return ResponseEntity.status(HttpStatus.CREATED).body(clienteSalvo);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Erro:" + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar cliente");
-        }
+    public ResponseEntity<ClienteResponse> cadastrarCliente(@Valid @RequestBody ClienteRequest clienteRequest) {
+        Cliente cliente = modelMapper.map(clienteRequest, Cliente.class);
+        Cliente clienteSalvo = clienteService.cadastrarCliente(cliente);
+        ClienteResponse clienteResponse = modelMapper.map(clienteSalvo, ClienteResponse.class);
+        return ResponseEntity.status(HttpStatus.CREATED).body(clienteResponse);
     }
 
-    // Listar clientes ativos
     @GetMapping
-    public ResponseEntity<List<Cliente>> listarClientes() {
+    public ResponseEntity<List<ClienteResponse>> listarClientes() {
         List<Cliente> clientes = clienteService.listarAtivos();
-        return ResponseEntity.ok(clientes);
+        List<ClienteResponse> clientesResponse = clientes.stream()
+                .map(cliente -> modelMapper.map(cliente, ClienteResponse.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(clientesResponse);
     }
 
-    // Buscar cliente por ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
-        Optional<Cliente> cliente = clienteService.buscarPorId(id);
+    public ResponseEntity<ClienteResponse> buscarPorId(@PathVariable Long id) {
+        Optional<Cliente> clienteOptional = clienteService.buscarPorId(id);
 
-        if (cliente.isPresent()) {
-            return ResponseEntity.ok(cliente.get());
+        if (clienteOptional.isPresent()) {
+            ClienteResponse clienteResponse = modelMapper.map(clienteOptional.get(), ClienteResponse.class);
+            return ResponseEntity.ok(clienteResponse);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    // Atualizar cliente
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizarCliente(@PathVariable Long id, @Valid @RequestBody Cliente cliente) {
-        try {
-            Cliente clienteAtualizado = clienteService.atualizar(id, cliente);
-            return ResponseEntity.ok(clienteAtualizado);
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Erro:" + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar cliente");
-        }
-
+    public ResponseEntity<ClienteResponse> atualizarCliente(@PathVariable Long id,
+            @Valid @RequestBody ClienteRequest clienteRequest) {
+        Cliente cliente = modelMapper.map(clienteRequest, Cliente.class);
+        Cliente clienteAtualizado = clienteService.atualizar(id, cliente);
+        ClienteResponse clienteResponse = modelMapper.map(clienteAtualizado, ClienteResponse.class);
+        return ResponseEntity.ok(clienteResponse);
     }
 
-    // Deletar cliente (inativar)
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> inativarCliente(@PathVariable Long id) {
-        try {
-            clienteService.inativar(id);
-            return ResponseEntity.ok().body("Cliente inativado com sucesso");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Erro:" + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao inativar o cliente");
-        }
+    public ResponseEntity<String> inativarCliente(@PathVariable Long id) {
+        clienteService.inativar(id);
+        return ResponseEntity.ok("Cliente inativado com sucesso");
     }
 
-    // Buscar cliente por email
     @GetMapping("/email/{email}")
-    public ResponseEntity<?> buscarPorEmail(@PathVariable String email) {
-        Optional<Cliente> cliente = clienteService.buscarPorEmail(email);
+    public ResponseEntity<ClienteResponse> buscarPorEmail(@PathVariable String email) {
+        Optional<Cliente> clienteOptional = clienteService.buscarPorEmail(email);
 
-        if (cliente.isPresent()) {
-            return ResponseEntity.ok(cliente.get());
+        if (clienteOptional.isPresent()) {
+            ClienteResponse clienteResponse = modelMapper.map(clienteOptional.get(), ClienteResponse.class);
+            return ResponseEntity.ok(clienteResponse);
         } else {
             return ResponseEntity.notFound().build();
         }
-
     }
 
-    // Buscar cliente por nome
     @GetMapping("/buscar")
-    public ResponseEntity<List<Cliente>> buscarPorNome(@RequestParam String nome) {
+    public ResponseEntity<List<ClienteResponse>> buscarPorNome(@RequestParam String nome) {
         List<Cliente> clientes = clienteService.buscarPorNome(nome);
-        return ResponseEntity.ok(clientes);
+        List<ClienteResponse> clientesResponse = clientes.stream()
+                .map(cliente -> modelMapper.map(cliente, ClienteResponse.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(clientesResponse);
     }
 }

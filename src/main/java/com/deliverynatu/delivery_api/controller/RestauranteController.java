@@ -1,65 +1,73 @@
 package com.deliverynatu.delivery_api.controller;
 
+import com.deliverynatu.delivery_api.dto.request.RestauranteRequest;
+import com.deliverynatu.delivery_api.dto.response.RestauranteResponse;
 import com.deliverynatu.delivery_api.entity.Restaurante;
 import com.deliverynatu.delivery_api.service.RestauranteService;
+import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/restaurantes")
+@RequestMapping("/api/restaurantes")
 public class RestauranteController {
 
     @Autowired
     private RestauranteService restauranteService;
 
-    // Criar restaurante
-    @PostMapping
-    public ResponseEntity<Restaurante> cadastrar(@RequestBody Restaurante restaurante) {
-        return ResponseEntity.ok(restauranteService.cadastrar(restaurante));
+    @Autowired
+    private ModelMapper modelMapper;
+
+    private RestauranteResponse convertToResponse(Restaurante restaurante) {
+        return modelMapper.map(restaurante, RestauranteResponse.class);
     }
 
-    // Buscar por ID
+    @PostMapping
+    public ResponseEntity<RestauranteResponse> cadastrar(@Valid @RequestBody RestauranteRequest restauranteRequest) {
+        Restaurante restaurante = modelMapper.map(restauranteRequest, Restaurante.class);
+        Restaurante novoRestaurante = restauranteService.cadastrar(restaurante);
+        return new ResponseEntity<>(convertToResponse(novoRestaurante), HttpStatus.CREATED);
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<Restaurante> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<RestauranteResponse> buscarPorId(@PathVariable Long id) {
         return restauranteService.buscarPorId(id)
-                .map(ResponseEntity::ok)
+                .map(restaurante -> ResponseEntity.ok(convertToResponse(restaurante)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Listar todos os ativos
     @GetMapping
-    public ResponseEntity<List<Restaurante>> listarAtivos() {
-        return ResponseEntity.ok(restauranteService.listarAtivos());
+    public ResponseEntity<List<RestauranteResponse>> listarAtivos() {
+        List<RestauranteResponse> responses = restauranteService.listarAtivos().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
-    // Buscar por categoria
     @GetMapping("/categoria/{categoria}")
-    public ResponseEntity<List<Restaurante>> buscarPorCategoria(@PathVariable String categoria) {
-        return ResponseEntity.ok(restauranteService.buscarPorCategoria(categoria));
+    public ResponseEntity<List<RestauranteResponse>> buscarPorCategoria(@PathVariable String categoria) {
+        List<RestauranteResponse> responses = restauranteService.buscarPorCategoria(categoria).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
-    // Atualizar restaurante
     @PutMapping("/{id}")
-    public ResponseEntity<Restaurante> atualizar(@PathVariable Long id,
-            @RequestBody Restaurante restauranteAtualizado) {
-        try {
-            return ResponseEntity.ok(restauranteService.atualizar(id, restauranteAtualizado));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<RestauranteResponse> atualizar(@PathVariable Long id, @Valid @RequestBody RestauranteRequest restauranteRequest) {
+        Restaurante restaurante = modelMapper.map(restauranteRequest, Restaurante.class);
+        Restaurante restauranteAtualizado = restauranteService.atualizar(id, restaurante);
+        return ResponseEntity.ok(convertToResponse(restauranteAtualizado));
     }
 
-    // Inativar restaurante
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> inativar(@PathVariable Long id) {
-        try {
-            restauranteService.inativar(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        restauranteService.inativar(id);
+        return ResponseEntity.noContent().build();
     }
 }

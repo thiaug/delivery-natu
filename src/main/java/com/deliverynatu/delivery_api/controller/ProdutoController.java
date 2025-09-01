@@ -1,78 +1,90 @@
 package com.deliverynatu.delivery_api.controller;
 
+import com.deliverynatu.delivery_api.dto.request.ProdutoRequest;
+import com.deliverynatu.delivery_api.dto.response.ProdutoResponse;
 import com.deliverynatu.delivery_api.entity.Produto;
 import com.deliverynatu.delivery_api.service.ProdutoService;
+import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/produtos")
+@RequestMapping("/api/produtos")
 public class ProdutoController {
 
     @Autowired
     private ProdutoService produtoService;
 
-    // Criar produto em um restaurante
-    @PostMapping("/restaurante/{restauranteId}")
-    public ResponseEntity<Produto> cadastrar(@RequestBody Produto produto, @PathVariable Long restauranteId) {
-        return ResponseEntity.ok(produtoService.cadastrar(produto, restauranteId));
+    @Autowired
+    private ModelMapper modelMapper;
+
+    private ProdutoResponse convertToResponse(Produto produto) {
+        return modelMapper.map(produto, ProdutoResponse.class);
     }
 
-    // Buscar produto por ID
+    @PostMapping("/restaurante/{restauranteId}")
+    public ResponseEntity<ProdutoResponse> cadastrar(@Valid @RequestBody ProdutoRequest produtoRequest, @PathVariable Long restauranteId) {
+        Produto produto = modelMapper.map(produtoRequest, Produto.class);
+        Produto novoProduto = produtoService.cadastrar(produto, restauranteId);
+        return new ResponseEntity<>(convertToResponse(novoProduto), HttpStatus.CREATED);
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<Produto> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<ProdutoResponse> buscarPorId(@PathVariable Long id) {
         return produtoService.buscarPorId(id)
-                .map(ResponseEntity::ok)
+                .map(produto -> ResponseEntity.ok(convertToResponse(produto)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Listar todos os produtos disponíveis
     @GetMapping
-    public ResponseEntity<List<Produto>> listarTodos() {
-        return ResponseEntity.ok(produtoService.listarTodosDisponiveis());
+    public ResponseEntity<List<ProdutoResponse>> listarTodos() {
+        List<ProdutoResponse> responses = produtoService.listarTodosDisponiveis().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
-    // Listar produtos por restaurante
     @GetMapping("/restaurante/{restauranteId}")
-    public ResponseEntity<List<Produto>> listarPorRestaurante(@PathVariable Long restauranteId) {
-        return ResponseEntity.ok(produtoService.listarPorRestaurante(restauranteId));
+    public ResponseEntity<List<ProdutoResponse>> listarPorRestaurante(@PathVariable Long restauranteId) {
+        List<ProdutoResponse> responses = produtoService.listarPorRestaurante(restauranteId).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
-    // Buscar por categoria
     @GetMapping("/categoria/{categoria}")
-    public ResponseEntity<List<Produto>> buscarPorCategoria(@PathVariable String categoria) {
-        return ResponseEntity.ok(produtoService.buscarPorCategoria(categoria));
+    public ResponseEntity<List<ProdutoResponse>> buscarPorCategoria(@PathVariable String categoria) {
+        List<ProdutoResponse> responses = produtoService.buscarPorCategoria(categoria).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
-    // Buscar por faixa de preço
     @GetMapping("/preco")
-    public ResponseEntity<List<Produto>> buscarPorFaixaDePreco(@RequestParam BigDecimal precoMin,
-            @RequestParam BigDecimal precoMax) {
-        return ResponseEntity.ok(produtoService.buscarPorFaixaDePreco(precoMin, precoMax));
+    public ResponseEntity<List<ProdutoResponse>> buscarPorFaixaDePreco(@RequestParam BigDecimal precoMin, @RequestParam BigDecimal precoMax) {
+        List<ProdutoResponse> responses = produtoService.buscarPorFaixaDePreco(precoMin, precoMax).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
-    // Atualizar produto
     @PutMapping("/{id}")
-    public ResponseEntity<Produto> atualizar(@PathVariable Long id, @RequestBody Produto produtoAtualizado) {
-        try {
-            return ResponseEntity.ok(produtoService.atualizar(id, produtoAtualizado));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<ProdutoResponse> atualizar(@PathVariable Long id, @Valid @RequestBody ProdutoRequest produtoRequest) {
+        Produto produto = modelMapper.map(produtoRequest, Produto.class);
+        Produto produtoAtualizado = produtoService.atualizar(id, produto);
+        return ResponseEntity.ok(convertToResponse(produtoAtualizado));
     }
 
-    // Alterar disponibilidade do produto
     @PatchMapping("/{id}/disponibilidade")
     public ResponseEntity<Void> alterarDisponibilidade(@PathVariable Long id, @RequestParam boolean disponivel) {
-        try {
-            produtoService.alterarDisponibilidade(id, disponivel);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        produtoService.alterarDisponibilidade(id, disponivel);
+        return ResponseEntity.noContent().build();
     }
 }
