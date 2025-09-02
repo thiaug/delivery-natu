@@ -2,12 +2,15 @@ package com.deliverynatu.delivery_api.dto.response;
 
 import com.deliverynatu.delivery_api.enums.StatusPedido;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class PedidoResponse {
 
     private Long id;
@@ -23,13 +26,15 @@ public class PedidoResponse {
     private RestauranteResponse restaurante;
     private List<ItemPedidoResponse> itens;
 
-    @Data
+    @Getter
+    @Setter
     public static class ClienteResponse {
         private Long id;
         private String nome;
     }
 
-    @Data
+    @Getter
+    @Setter
     public static class RestauranteResponse {
         private Long id;
         private String nome;

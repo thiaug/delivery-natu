@@ -1,8 +1,10 @@
 package com.deliverynatu.delivery_api.dto.response;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class ClienteResponse {
 
     private Long id;
@@ -10,4 +12,5 @@ public class ClienteResponse {
     private String email;
     private String telefone;
     private String endereco;
+
 }

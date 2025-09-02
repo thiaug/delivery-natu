@@ -13,5 +13,4 @@ public class ItemPedidoRequest {
     @NotNull(message = "A quantidade é obrigatória.")
     @Min(value = 1, message = "A quantidade deve ser de no mínimo 1.")
     private Integer quantidade;
-
 }

@@ -1,9 +1,12 @@
 package com.deliverynatu.delivery_api.dto.response;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
 public class ProdutoResponse {
 
     private Long id;
@@ -14,7 +17,8 @@ public class ProdutoResponse {
     private boolean disponivel;
     private RestauranteInProdutoResponse restaurante;
 
-    @Data
+    @Getter
+    @Setter
     public static class RestauranteInProdutoResponse {
         private Long id;
         private String nome;

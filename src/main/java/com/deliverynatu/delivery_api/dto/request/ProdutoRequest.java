@@ -20,4 +20,5 @@ public class ProdutoRequest {
     private BigDecimal preco;
 
     private String categoria;
+
 }

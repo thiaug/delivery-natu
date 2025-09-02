@@ -11,5 +11,6 @@ public class PedidoRequest {
 
     @NotNull(message = "O ID do restaurante é obrigatório.")
     private Long restauranteId;
+
     private String observacoes;
 }
