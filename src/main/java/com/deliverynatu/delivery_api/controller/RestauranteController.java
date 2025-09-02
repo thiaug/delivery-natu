@@ -18,11 +18,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/restaurantes")
 public class RestauranteController {
 
-    @Autowired
-    private RestauranteService restauranteService;
+    private final RestauranteService restauranteService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public RestauranteController(RestauranteService restauranteService, ModelMapper modelMapper) {
+        this.restauranteService = restauranteService;
+        this.modelMapper = modelMapper;
+    }
 
     private RestauranteResponse convertToResponse(Restaurante restaurante) {
         return modelMapper.map(restaurante, RestauranteResponse.class);
@@ -59,7 +62,8 @@ public class RestauranteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RestauranteResponse> atualizar(@PathVariable Long id, @Valid @RequestBody RestauranteRequest restauranteRequest) {
+    public ResponseEntity<RestauranteResponse> atualizar(@PathVariable Long id,
+            @Valid @RequestBody RestauranteRequest restauranteRequest) {
         Restaurante restaurante = modelMapper.map(restauranteRequest, Restaurante.class);
         Restaurante restauranteAtualizado = restauranteService.atualizar(id, restaurante);
         return ResponseEntity.ok(convertToResponse(restauranteAtualizado));

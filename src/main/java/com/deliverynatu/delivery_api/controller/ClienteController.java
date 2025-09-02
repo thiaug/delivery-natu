@@ -20,11 +20,16 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class ClienteController {
 
-    @Autowired
-    private ClienteService clienteService;
+    // 1. Atributos agora são 'final' para garantir imutabilidade após a injeção.
+    private final ClienteService clienteService;
+    private final ModelMapper modelMapper;
 
+    // 2. A injeção é feita através do construtor.
     @Autowired
-    private ModelMapper modelMapper;
+    public ClienteController(ClienteService clienteService, ModelMapper modelMapper) {
+        this.clienteService = clienteService;
+        this.modelMapper = modelMapper;
+    }
 
     @PostMapping
     public ResponseEntity<ClienteResponse> cadastrarCliente(@Valid @RequestBody ClienteRequest clienteRequest) {

@@ -21,11 +21,14 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class PedidoController {
 
-    @Autowired
-    private PedidoService pedidoService;
+    private final PedidoService pedidoService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public PedidoController(PedidoService pedidoService, ModelMapper modelMapper) {
+        this.pedidoService = pedidoService;
+        this.modelMapper = modelMapper;
+    }
 
     private PedidoResponse convertToResponse(Pedido pedido) {
         return modelMapper.map(pedido, PedidoResponse.class);
@@ -38,7 +41,8 @@ public class PedidoController {
     }
 
     @PostMapping("/{pedidoId}/itens")
-    public ResponseEntity<PedidoResponse> adicionarItem(@PathVariable Long pedidoId, @Valid @RequestBody ItemPedidoRequest itemRequest) {
+    public ResponseEntity<PedidoResponse> adicionarItem(@PathVariable Long pedidoId,
+            @Valid @RequestBody ItemPedidoRequest itemRequest) {
         Pedido pedido = pedidoService.adicionarItem(pedidoId, itemRequest.getProdutoId(), itemRequest.getQuantidade());
         return ResponseEntity.ok(convertToResponse(pedido));
     }
@@ -71,13 +75,15 @@ public class PedidoController {
     }
 
     @PutMapping("/{pedidoId}/status")
-    public ResponseEntity<PedidoResponse> atualizarStatus(@PathVariable Long pedidoId, @RequestParam StatusPedido status) {
+    public ResponseEntity<PedidoResponse> atualizarStatus(@PathVariable Long pedidoId,
+            @RequestParam StatusPedido status) {
         Pedido pedido = pedidoService.atualizarStatus(pedidoId, status);
         return ResponseEntity.ok(convertToResponse(pedido));
     }
 
     @PutMapping("/{pedidoId}/cancelar")
-    public ResponseEntity<PedidoResponse> cancelarPedido(@PathVariable Long pedidoId, @RequestParam(required = false) String motivo) {
+    public ResponseEntity<PedidoResponse> cancelarPedido(@PathVariable Long pedidoId,
+            @RequestParam(required = false) String motivo) {
         Pedido pedido = pedidoService.cancelarPedido(pedidoId, motivo);
         return ResponseEntity.ok(convertToResponse(pedido));
     }

@@ -19,18 +19,22 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/produtos")
 public class ProdutoController {
 
-    @Autowired
-    private ProdutoService produtoService;
+    private final ProdutoService produtoService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public ProdutoController(ProdutoService produtoService, ModelMapper modelMapper) {
+        this.produtoService = produtoService;
+        this.modelMapper = modelMapper;
+    }
 
     private ProdutoResponse convertToResponse(Produto produto) {
         return modelMapper.map(produto, ProdutoResponse.class);
     }
 
     @PostMapping("/restaurante/{restauranteId}")
-    public ResponseEntity<ProdutoResponse> cadastrar(@Valid @RequestBody ProdutoRequest produtoRequest, @PathVariable Long restauranteId) {
+    public ResponseEntity<ProdutoResponse> cadastrar(@Valid @RequestBody ProdutoRequest produtoRequest,
+            @PathVariable Long restauranteId) {
         Produto produto = modelMapper.map(produtoRequest, Produto.class);
         Produto novoProduto = produtoService.cadastrar(produto, restauranteId);
         return new ResponseEntity<>(convertToResponse(novoProduto), HttpStatus.CREATED);
@@ -68,7 +72,8 @@ public class ProdutoController {
     }
 
     @GetMapping("/preco")
-    public ResponseEntity<List<ProdutoResponse>> buscarPorFaixaDePreco(@RequestParam BigDecimal precoMin, @RequestParam BigDecimal precoMax) {
+    public ResponseEntity<List<ProdutoResponse>> buscarPorFaixaDePreco(@RequestParam BigDecimal precoMin,
+            @RequestParam BigDecimal precoMax) {
         List<ProdutoResponse> responses = produtoService.buscarPorFaixaDePreco(precoMin, precoMax).stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
@@ -76,7 +81,8 @@ public class ProdutoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProdutoResponse> atualizar(@PathVariable Long id, @Valid @RequestBody ProdutoRequest produtoRequest) {
+    public ResponseEntity<ProdutoResponse> atualizar(@PathVariable Long id,
+            @Valid @RequestBody ProdutoRequest produtoRequest) {
         Produto produto = modelMapper.map(produtoRequest, Produto.class);
         Produto produtoAtualizado = produtoService.atualizar(id, produto);
         return ResponseEntity.ok(convertToResponse(produtoAtualizado));
