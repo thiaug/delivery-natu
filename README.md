@@ -14,6 +14,7 @@ Este projeto é uma API RESTful para um sistema de delivery, permitindo o gerenc
 - **Maven**
 - **H2 Database** (Banco de dados em memória)
 - **ModelMapper** (Mapeamento de objetos)
+- **Swagger (Springdoc OpenAPI)**
 
 ## 🏗️ Estrutura do Projeto
 
@@ -63,9 +64,17 @@ Acesse o console do H2 para gerenciar os dados em:
 
 **Importante:** Certifique-se de que a URL do JDBC no console do H2 seja `jdbc:h2:mem:deliverydb`.
 
+## 📖 Documentação da API (Swagger)
+
+A documentação da API está disponível através do Swagger UI, que é gerado automaticamente pelo Springdoc OpenAPI. Com ele, é possível visualizar todos os endpoints, seus parâmetros, e testá-los diretamente pelo navegador.
+
+Para acessar a documentação, inicie a aplicação e acesse a seguinte URL:
+
+[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
 ## 📝 Endpoints da API
 
-A seguir estão os endpoints disponíveis na aplicação.
+A seguir estão os endpoints disponíveis na aplicação. Para uma visualização interativa e detalhada, utilize o Swagger UI.
 
 ### Health Check
 
