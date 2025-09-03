@@ -60,14 +60,16 @@ public class PedidoServiceImpl implements PedidoService {
                 .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado com ID: " + produtoId));
 
         if (!produto.isDisponivel()) {
-            throw new IllegalArgumentException("Produto indisponível:" + produto.getNome() + " Não é possível adicionar ao pedido");
+            throw new IllegalArgumentException(
+                    "Produto indisponível:" + produto.getNome() + " Não é possível adicionar ao pedido");
         }
         if (quantidade <= 0) {
             throw new IllegalArgumentException("A quantidade deve ser maior que zero.");
         }
 
         if (!produto.getRestaurante().getId().equals(pedido.getRestaurante().getId())) {
-            throw new IllegalArgumentException("O produto " + produto.getNome() + " não pertence ao restaurante do pedido.");
+            throw new IllegalArgumentException(
+                    "O produto " + produto.getNome() + " não pertence ao restaurante do pedido.");
         }
         ItemPedido item = new ItemPedido();
         item.setProduto(produto);
