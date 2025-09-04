@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RestauranteRepository extends JpaRepository<Restaurante, Long> {
     // Buscar restaurante por nome
-    Optional<Restaurante> findByNome(String nome);
+    Optional<Restaurante> findByNomeContainingIgnoreCase(String nome);
 
     // Verifica se existe por nome
     boolean existsByNome(String nome);

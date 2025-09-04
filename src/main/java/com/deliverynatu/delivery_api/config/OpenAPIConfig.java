@@ -13,11 +13,10 @@ public class OpenAPIConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Delivery API")
+                        .title("Natú Delivery API")
                         .version("1.0")
-                        .description("API para gerenciamento de pedidos de delivery")
+                        .description("API para gerenciamento de pedidos do Natú delivery")
                         .termsOfService("http://swagger.io/terms/")
                         .license(new License().name("Apache 2.0").url("http://springdoc.org")));
     }
-
 }

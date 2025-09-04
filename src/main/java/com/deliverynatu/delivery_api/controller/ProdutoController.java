@@ -4,6 +4,11 @@ import com.deliverynatu.delivery_api.dto.request.ProdutoRequest;
 import com.deliverynatu.delivery_api.dto.response.ProdutoResponse;
 import com.deliverynatu.delivery_api.entity.Produto;
 import com.deliverynatu.delivery_api.service.ProdutoService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +22,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/produtos")
+@CrossOrigin(origins = "*")
+@Tag(name = "Produtos", description = "API para gerenciamento de produtos")
 public class ProdutoController {
 
     private final ProdutoService produtoService;
@@ -33,6 +40,13 @@ public class ProdutoController {
     }
 
     @PostMapping("/restaurante/{restauranteId}")
+    @Operation(summary = "Cadastrar um novo produto", description = "Endpoint para cadastrar um novo produto")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Produto cadastrado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação dos dados"),
+            @ApiResponse(responseCode = "409", description = "O produto já existe"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     public ResponseEntity<ProdutoResponse> cadastrar(@Valid @RequestBody ProdutoRequest produtoRequest,
             @PathVariable Long restauranteId) {
         Produto produto = modelMapper.map(produtoRequest, Produto.class);
@@ -41,13 +55,27 @@ public class ProdutoController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar produto por ID", description = "Endpoint para buscar um produto por ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Produto encontrado"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação dos dados"),
+            @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     public ResponseEntity<ProdutoResponse> buscarPorId(@PathVariable Long id) {
         return produtoService.buscarPorId(id)
                 .map(produto -> ResponseEntity.ok(convertToResponse(produto)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping
+    @GetMapping("/disponiveis")
+    @Operation(summary = "Listar produtos disponíveis", description = "Endpoint para listar todos os produtos disponíveis")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de produtos encontrados"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação dos dados"),
+            @ApiResponse(responseCode = "404", description = "Nenhum produto encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     public ResponseEntity<List<ProdutoResponse>> listarTodos() {
         List<ProdutoResponse> responses = produtoService.listarTodosDisponiveis().stream()
                 .map(this::convertToResponse)
@@ -56,6 +84,13 @@ public class ProdutoController {
     }
 
     @GetMapping("/restaurante/{restauranteId}")
+    @Operation(summary = "Listar produtos por restaurante", description = "Endpoint para listar produtos por restaurante")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de produtos encontrada"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação dos dados"),
+            @ApiResponse(responseCode = "404", description = "Nenhum produto encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     public ResponseEntity<List<ProdutoResponse>> listarPorRestaurante(@PathVariable Long restauranteId) {
         List<ProdutoResponse> responses = produtoService.listarPorRestaurante(restauranteId).stream()
                 .map(this::convertToResponse)
@@ -64,6 +99,13 @@ public class ProdutoController {
     }
 
     @GetMapping("/categoria/{categoria}")
+    @Operation(summary = "Buscar produtos por categoria", description = "Endpoint para buscar produtos por categoria")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Produtos encontrados"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação dos dados"),
+            @ApiResponse(responseCode = "404", description = "Categoria não encontrada"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     public ResponseEntity<List<ProdutoResponse>> buscarPorCategoria(@PathVariable String categoria) {
         List<ProdutoResponse> responses = produtoService.buscarPorCategoria(categoria).stream()
                 .map(this::convertToResponse)
@@ -72,6 +114,13 @@ public class ProdutoController {
     }
 
     @GetMapping("/preco")
+    @Operation(summary = "Buscar produtos por faixa de preço", description = "Endpoint para buscar produtos por faixa de preço")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Produtos encontrados"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação dos dados"),
+            @ApiResponse(responseCode = "404", description = "Nenhum produto encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     public ResponseEntity<List<ProdutoResponse>> buscarPorFaixaDePreco(@RequestParam BigDecimal precoMin,
             @RequestParam BigDecimal precoMax) {
         List<ProdutoResponse> responses = produtoService.buscarPorFaixaDePreco(precoMin, precoMax).stream()
@@ -81,6 +130,13 @@ public class ProdutoController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar produto", description = "Endpoint para atualizar um produto")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Produto atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação dos dados"),
+            @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+    })
     public ResponseEntity<ProdutoResponse> atualizar(@PathVariable Long id,
             @Valid @RequestBody ProdutoRequest produtoRequest) {
         Produto produto = modelMapper.map(produtoRequest, Produto.class);
@@ -89,6 +145,14 @@ public class ProdutoController {
     }
 
     @PatchMapping("/{id}/disponibilidade")
+    @Operation(summary = "Alterar disponibilidade do produto", description = "Endpoint para alterar a disponibilidade de um produto")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Disponibilidade do produto alterada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação dos dados"),
+            @ApiResponse(responseCode = "404", description = "Produto não encontrado"),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+
+    })
     public ResponseEntity<Void> alterarDisponibilidade(@PathVariable Long id, @RequestParam boolean disponivel) {
         produtoService.alterarDisponibilidade(id, disponivel);
         return ResponseEntity.noContent().build();

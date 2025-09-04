@@ -4,6 +4,8 @@ import com.deliverynatu.delivery_api.dto.request.ClienteRequest;
 import com.deliverynatu.delivery_api.dto.response.ClienteResponse;
 import com.deliverynatu.delivery_api.entity.Cliente;
 import com.deliverynatu.delivery_api.service.ClienteService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/clientes")
 @CrossOrigin(origins = "*")
+@Tag(name = "Clientes", description = "API para gerenciamento de clientes")
 public class ClienteController {
 
     // 1. Atributos agora são 'final' para garantir imutabilidade após a injeção.
@@ -26,6 +29,7 @@ public class ClienteController {
 
     // 2. A injeção é feita através do construtor.
     @Autowired
+
     public ClienteController(ClienteService clienteService, ModelMapper modelMapper) {
         this.clienteService = clienteService;
         this.modelMapper = modelMapper;

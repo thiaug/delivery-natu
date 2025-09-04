@@ -13,6 +13,8 @@ public interface RestauranteService {
 
     List<Restaurante> listarAtivos();
 
+    Optional<Restaurante> buscarPorNome(String nome);
+
     List<Restaurante> buscarPorCategoria(String categoria);
 
     Restaurante atualizar(Long id, Restaurante restauranteAtualizado);

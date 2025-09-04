@@ -19,11 +19,17 @@ public class RestauranteServiceImpl implements RestauranteService {
 
     @Override
     public Restaurante cadastrar(Restaurante restaurante) {
-        if (restauranteRepository.findByNome(restaurante.getNome()).isPresent()) {
+        if (restauranteRepository.findByNomeContainingIgnoreCase(restaurante.getNome()).isPresent()) {
             throw new IllegalArgumentException("Restaurante já cadastrado com o nome: " + restaurante.getNome());
         }
         restaurante.setAtivo(true);
         return restauranteRepository.save(restaurante);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Restaurante> buscarPorNome(String nome) {
+        return restauranteRepository.findByNomeContainingIgnoreCase(nome);
     }
 
     @Override
@@ -50,8 +56,9 @@ public class RestauranteServiceImpl implements RestauranteService {
                 .orElseThrow(() -> new IllegalArgumentException("Restaurante não encontrado com ID: " + id));
 
         if (!restaurante.getNome().equals(restauranteAtualizado.getNome()) &&
-                restauranteRepository.findByNome(restauranteAtualizado.getNome()).isPresent()) {
-            throw new IllegalArgumentException("Restaurante já cadastrado com o nome: " + restauranteAtualizado.getNome());
+                restauranteRepository.findByNomeContainingIgnoreCase(restauranteAtualizado.getNome()).isPresent()) {
+            throw new IllegalArgumentException(
+                    "Restaurante já cadastrado com o nome: " + restauranteAtualizado.getNome());
         }
 
         restaurante.setNome(restauranteAtualizado.getNome());
