@@ -13,7 +13,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RestauranteRepository extends JpaRepository<Restaurante, Long> {
+
     // Buscar restaurante por nome
+    Optional<Restaurante> findByNome(String nome);
+
     Optional<Restaurante> findByNomeContainingIgnoreCase(String nome);
 
     // Verifica se existe por nome
@@ -31,7 +34,7 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long> 
     // Por taxa de entrega menor ou igual
     List<Restaurante> findByTaxaEntregaLessThanEqual(BigDecimal taxa);
 
-    // Top 5 restaurantes por nome (ordem alfabéƟca)
+    // Top 5 restaurantes por nome (ordem alfabetica)
     List<Restaurante> findTop5ByOrderByNomeAsc();
 
     // Buscar restaurante por nome contendo (case insensitive)
@@ -49,7 +52,7 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long> 
 
     @Query("SELECT r.nome as nomeRestaurante, " +
             "SUM(p.valorTotal) as totalVendas, " +
-            "COUNT(p.id) as quanƟdePedidos " +
+            "COUNT(p.id) as quantidadePedidos " +
             "FROM Restaurante r " +
             "LEFT JOIN Pedido p ON r.id = p.restaurante.id " +
             "GROUP BY r.id, r.nome")

@@ -127,7 +127,7 @@ public class DataLoader implements CommandLineRunner {
         produto2.setNome("Iogurte natural");
         produto2.setDescricao("Cremoso e nutritivo, com probióticos benéficos para a saúde intestinal.");
         produto2.setPreco(new BigDecimal("3.00"));
-        produto1.setCategoria("Vegetariano");
+        produto2.setCategoria("Vegetariano");
         produto2.setDisponivel(false);
 
         Produto produto3 = new Produto();

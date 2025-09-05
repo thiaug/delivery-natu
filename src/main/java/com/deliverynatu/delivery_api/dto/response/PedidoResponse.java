@@ -1,7 +1,6 @@
 package com.deliverynatu.delivery_api.dto.response;
 
 import com.deliverynatu.delivery_api.enums.StatusPedido;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
